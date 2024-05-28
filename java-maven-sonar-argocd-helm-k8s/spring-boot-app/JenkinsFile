@@ -1,6 +1,5 @@
 pipeline {
     agent any
-
     // Define Maven tool installation
     tools {
         // Install Maven 3.8.1
