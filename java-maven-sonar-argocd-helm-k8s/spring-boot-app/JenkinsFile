@@ -1,16 +1,17 @@
 pipeline {
-    agent any
-
-    tools {
-        // Install the Maven version configured in Jenkins
-        maven 'Maven 3.8.1'
-    }
+    agent {
+        docker {
+          image 'abhishekf5/maven-abhishek-docker-agent:v1'
+          args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+        }
+      }
 
     stages {
         stage('Checkout') {
             steps {
                 // Checkout code from version control
-                git 'https://github.com/Bhavanabcgit/Jenkins-Zero-To-Hero.git'
+                sh 'echo passed'
+                git branch: 'main', url: 'https://github.com/Bhavanabcgit/Jenkins-Zero-To-Hero.git'
             }
         }
 
