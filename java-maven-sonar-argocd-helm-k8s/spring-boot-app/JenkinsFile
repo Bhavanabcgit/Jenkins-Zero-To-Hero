@@ -19,7 +19,13 @@ pipeline {
         stage('Build') {
             steps {
                 // Run Maven build and package the application
+                sshagent(['ssh-credential-id']) {
+                                    sh '''
+                                    ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 <<EOF
                 sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
+                 EOF
+                                    '''
+                                }
             }
         }
 
