@@ -27,7 +27,7 @@ pipeline {
                         '''
                         script {
                             def dockerImage = docker.image("${DOCKER_IMAGE}")
-                            docker.withRegistry('https://docker.io/', REGISTRY_CREDENTIALS) {
+                            docker.withRegistry('https://hub.docker.com/', REGISTRY_CREDENTIALS) {
                                 dockerImage.push()
                            }
                         }
