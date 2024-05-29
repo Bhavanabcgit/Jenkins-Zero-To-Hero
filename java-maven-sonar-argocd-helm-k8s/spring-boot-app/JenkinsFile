@@ -10,8 +10,19 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Checkout code from version control
+                // Checkout code from version control on Jenkins server (optional)
                 git branch: 'main', url: 'https://github.com/Bhavanabcgit/Jenkins-Zero-To-Hero.git'
+            }
+        }
+
+        stage('Setup Remote Environment') {
+            steps {
+                // Clone the repository on the remote server
+                sshagent(['ssh-credential-id']) {
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 "rm -rf java-maven-sonar-argocd-helm-k8s && git clone https://github.com/Bhavanabcgit/Jenkins-Zero-To-Hero.git"
+                    '''
+                }
             }
         }
 
@@ -20,7 +31,7 @@ pipeline {
                 // Run Maven build and package the application on the remote server
                 sshagent(['ssh-credential-id']) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 "cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package"
+                    ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 "cd Jenkins-Zero-To-Hero/java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package"
                     '''
                 }
             }
@@ -32,7 +43,7 @@ pipeline {
                 sshagent(['ssh-credential-id']) {
                     sh '''
                     ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 << EOF
-                    cd java-maven-sonar-argocd-helm-k8s/spring-boot-app
+                    cd Jenkins-Zero-To-Hero/java-maven-sonar-argocd-helm-k8s/spring-boot-app
                     docker build -t ${DOCKER_IMAGE} -f ${DOCKERFILE_LOCATION} .
                     echo ${DOCKER_CREDENTIALS_PSW} | docker login -u ${DOCKER_CREDENTIALS_USR} --password-stdin
                     docker push ${DOCKER_IMAGE}
