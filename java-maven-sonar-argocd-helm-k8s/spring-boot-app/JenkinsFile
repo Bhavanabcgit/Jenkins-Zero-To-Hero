@@ -8,12 +8,7 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                // Checkout code from version control
-                git branch: 'main', url: 'https://github.com/Bhavanabcgit/Jenkins-Zero-To-Hero.git'
-            }
-        }
+
 
         stage('Build') {
             steps {
