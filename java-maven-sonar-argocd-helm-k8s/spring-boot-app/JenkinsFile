@@ -20,7 +20,7 @@ pipeline {
                 // Run Maven build and package the application
                 sshagent(['ssh-credential-id']) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 "cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package"
+                    ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 "cd Jenkins-Zero-To-Hero/java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package"
                     '''
                 }
             }
