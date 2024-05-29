@@ -16,42 +16,26 @@ pipeline {
 
         stage('Setup Remote Environment') {
             steps {
-                sshagent(['ssh-credential-id']) {
-                    sh '''
-                    ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 <<ENDSSH
-                    rm -rf Jenkins-Zero-To-Hero
-                    git clone https://github.com/Bhavanabcgit/Jenkins-Zero-To-Hero.git
-                    ENDSSH
-                    '''
-                }
+                sh '''
+                ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 rm -rf Jenkins-Zero-To-Hero
+                ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 git clone https://github.com/Bhavanabcgit/Jenkins-Zero-To-Hero.git
+                '''
             }
         }
 
         stage('Build and Package') {
             steps {
-                sshagent(['ssh-credential-id']) {
-                    sh '''
-                    ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 <<ENDSSH
-                    cd Jenkins-Zero-To-Hero/java-maven-sonar-argocd-helm-k8s/spring-boot-app
-                    mvn clean dependency:go-offline package
-                    ENDSSH
-                    '''
-                }
+                sh '''
+                ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 "cd Jenkins-Zero-To-Hero/java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean dependency:go-offline package"
+                '''
             }
         }
 
         stage('Build and Push Docker Image') {
             steps {
-                sshagent(['ssh-credential-id']) {
-                    sh '''
-                    ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 <<ENDSSH
-                    cd Jenkins-Zero-To-Hero/java-maven-sonar-argocd-helm-k8s/spring-boot-app
-                    docker build -t ${DOCKER_IMAGE} -f ${DOCKERFILE_LOCATION} .
-                    echo ${DOCKER_CREDENTIALS_PSW} | docker login -u ${DOCKER_CREDENTIALS_USR} --password-stdin
-                    docker push ${DOCKER_IMAGE}
-                    ENDSSH
-                    '''
-                }
+                sh '''
+                ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 "cd Jenkins-Zero-To-Hero/java-maven-sonar-argocd-helm-k8s/spring-boot-app && docker build -t ${DOCKER_IMAGE} -f ${DOCKERFILE_LOCATION} . && echo ${DOCKER_CREDENTIALS_PSW} | docker login -u ${DOCKER_CREDENTIALS_USR} --password-stdin && docker push ${DOCKER_IMAGE}"
+                '''
             }
         }
     }
