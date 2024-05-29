@@ -24,10 +24,10 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             steps {
-             sshagent(['ssh-credential-id']) {
+              sshagent(['ssh-credential-id']) {
                  sh '''
                  ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 "cd Jenkins-Zero-To-Hero/java-maven-sonar-argocd-helm-k8s/spring-boot-app && docker build -t ${DOCKER_IMAGE} .'
-                                                     '''
+                 '''
 //                 script {
 //                     sh
 //                     def dockerImage = docker.image("${DOCKER_IMAGE}")
