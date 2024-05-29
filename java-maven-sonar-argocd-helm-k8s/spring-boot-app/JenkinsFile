@@ -11,7 +11,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout code from version control
-                sh 'echo passed'
                 git branch: 'main', url: 'https://github.com/Bhavanabcgit/Jenkins-Zero-To-Hero.git'
             }
         }
@@ -20,12 +19,10 @@ pipeline {
             steps {
                 // Run Maven build and package the application
                 sshagent(['ssh-credential-id']) {
-                                    sh '''
-                                    ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 <<EOF
-                sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
-                 EOF
-                                    '''
-                                }
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 "cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package"
+                    '''
+                }
             }
         }
 
