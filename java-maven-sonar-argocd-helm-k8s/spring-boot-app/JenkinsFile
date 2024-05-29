@@ -8,12 +8,20 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Bhavanabcgit/Jenkins-Zero-To-Hero.git'
+            }
+        }
+
         stage('Setup Remote Environment') {
             steps {
-                // Clone the repository on the remote server
                 sshagent(['ssh-credential-id']) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 "rm -rf Jenkins-Zero-To-Hero && git clone https://github.com/Bhavanabcgit/Jenkins-Zero-To-Hero.git"
+                    ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 << 'EOF'
+                    rm -rf Jenkins-Zero-To-Hero
+                    git clone https://github.com/Bhavanabcgit/Jenkins-Zero-To-Hero.git
+                    EOF
                     '''
                 }
             }
@@ -21,10 +29,12 @@ pipeline {
 
         stage('Build and Package') {
             steps {
-                // Run Maven build and package the application on the remote server
                 sshagent(['ssh-credential-id']) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 "cd Jenkins-Zero-To-Hero/java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package"
+                    ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 << 'EOF'
+                    cd Jenkins-Zero-To-Hero/java-maven-sonar-argocd-helm-k8s/spring-boot-app
+                    mvn clean dependency:go-offline package
+                    EOF
                     '''
                 }
             }
@@ -32,7 +42,6 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             steps {
-                // Build and push Docker image on the remote server
                 sshagent(['ssh-credential-id']) {
                     sh '''
                     ssh -o StrictHostKeyChecking=no ubuntu@3.144.136.91 << 'EOF'
@@ -49,7 +58,6 @@ pipeline {
 
     post {
         always {
-            // Clean up workspace after build
             cleanWs()
         }
     }
